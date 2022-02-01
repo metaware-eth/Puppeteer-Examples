@@ -26,12 +26,35 @@ describe('Swag Labs Login', () => {
   const password = 'secret_sauce'
 
   it('should login successful', async () => {
-    // login flow 
-    await page.type('#user-name', 'standard_user', { delay: 50 })
-    await page.type('#password', password, { delay: 50 })
+    await page.type('#user-name', 'standard_user', { delay: 10 })
+    await page.type('#password', password, { delay: 10 })
     await page.click('#login-button', { waitUntil: 'networkidle0' })
     
-    expect(await page.url()).to.equal('https://www.saucedemo.com/inventory.htm;')
+    expect(page.url()).to.equal('https://www.saucedemo.com/inventory.html')
+  }).timeout(20000)
+
+  it('should msg user of account lockout', async () => {
+    await page.type('#user-name', 'locked_out_user', { delay: 10 })
+    await page.type('#password', password, { delay: 10 })
+    await page.click('#login-button', { waitUntil: 'networkidle0' })
+
+    const errElem = '#login_button_container > div > form > div.error-message-container.error > h3'
+    await page.waitForSelector(errElem)
+    const element = await page.$(errElem)
+    const value = await element.evaluate(el => el.textContent)
+    
+    expect(value).to.equal('Epic sadface: Sorry, this user has been locked out.')
+  }).timeout(20000)
+
+  it('should msg user of no account input', async () => {
+    await page.click('#login-button', { waitUntil: 'networkidle0' })
+
+    const errElem = '#login_button_container > div > form > div.error-message-container.error > h3'
+    await page.waitForSelector(errElem)
+    const element = await page.$(errElem)
+    const value = await element.evaluate(el => el.textContent)
+    
+    expect(value).to.equal('Epic sadface: Username is required')
   }).timeout(20000)
 })
 
