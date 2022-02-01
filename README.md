@@ -1,4 +1,4 @@
-# HaloFanaticsNFT
+# Puppeteer Examples
 ## About The Project
 
 This project is an example of functional front-end automation testing. Created with Puppeteer, Mocha, and Chai
